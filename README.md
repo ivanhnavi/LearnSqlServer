@@ -1,2 +1,0 @@
-# LearnSqlServer
-Sq lServer Projects
