@@ -88,14 +88,38 @@ order by R.name, M.title, Ra.stars
 
 --Question 6 For all cases where the same reviewer rated the same movie twice and gave it a higher rating the second time,
 -- return the reviewer's name and the title of the movie.
+SELECT name, title 
+FROM Movie M JOIN Rating Ra1 ON M.mID = Ra1.mID
+JOIN Reviewer R ON Ra1.rID = R.rID
+JOIN Rating Ra2 ON Ra1.rID = Ra2.rID
+WHERE Ra1.ratingDate > Ra2.ratingDate and Ra1.stars > Ra2.stars and Ra1.mID = Ra2.mID
 
 
 --Question 7 For each movie that has at least one rating, find the highest number of stars that movie received. 
 --Return the movie title and number of stars. Sort by movie title. 
+SELECT title, max(Ra.stars) AS [Highest Rating] FROM
+Movie M JOIN Rating Ra ON M.mID = Ra.mID
+GROUP by title
+ORDER by title
+
 
 --Question 8 For each movie, return the title and the 'rating spread', that is, the difference between highest and lowest ratings given to that movie.
 -- Sort by rating spread from highest to lowest, then by movie title
+SELECT M.title , (max(Ra.stars)-min(Ra.stars)) AS [Rating Spread]
+FROM Movie M JOIN Rating Ra ON M.mID = Ra.mID
+GROUP by title
+ORDER by [Rating Spread] DESC
 
 --Question 9 Find the difference between the average rating of movies released before 1980 and the average rating of movies released after 1980.
 --(Make sure to calculate the average rating for each movie, then the average of those averages for movies before 1980 and movies after.
 --Don't just calculate the overall average rating before and after 1980.)
+SELECT AVG(B.avrg)-AVG(A.avrg) 
+FROM (
+SELECT AVG(stars) AS avrg
+FROM Movie M JOIN Rating Ra ON M.mID = Ra.mID
+WHERE year < 1980
+GROUP by title) AS B,
+(SELECT AVG(stars) AS avrg 
+FROM Movie M JOIN Rating Ra ON M.mID = Ra.mID
+WHERE year > 1980
+GROUP by title) AS A
